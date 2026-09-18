@@ -1,0 +1,16 @@
+# Auto-provisioned dashboard provider for Grafana. Tells Grafana to scan
+# /etc/grafana/provisioning/dashboards-json/ on startup and load every
+# JSON file it finds. The compose file mounts assets/grafana/ there.
+apiVersion: 1
+
+providers:
+  - name: 'treeloom'
+    orgId: 1
+    folder: 'Treeloom'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards-json
+      foldersFromFilesStructure: false

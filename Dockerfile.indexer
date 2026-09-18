@@ -1,0 +1,26 @@
+FROM python:3.12-slim
+
+# Git needed for gitpython (commit SHA tracking, repo cloning)
+RUN apt-get update && apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# ── Full indexer dependencies ────────────────────────────────────────
+# The indexer owns all data access: tree-sitter chunking, TEI embedding,
+# Milvus inserts, Neo4j graph writes, PostgreSQL job state.
+COPY . .
+RUN pip install --no-cache-dir . && \
+    pip install --no-cache-dir supervisor
+
+# Pre-download tiktoken encoding cache so the container doesn't need
+# outbound internet at runtime.  The indexer imports tiktoken at module
+# load (adapters/tree_sitter/indexer.py:40) and `get_encoding()` hits
+# openaipublic.blob.core.windows.net on first call.
+RUN python -c "import tiktoken; tiktoken.get_encoding('cl100k_base')"
+
+ENV PYTHONPATH=/app/src
+ENV RUST_MIN_STACK=8388608
+
+EXPOSE 8001
+CMD ["uvicorn", "treeloom.indexer_service:app", "--host", "0.0.0.0", "--port", "8001"]

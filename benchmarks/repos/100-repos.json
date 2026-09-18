@@ -1,0 +1,702 @@
+[
+  {
+    "repo": "openclaw/openclaw",
+    "stars": 374693,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "Your own personal AI assistant. Any OS. Any Platform. The lobster way. \ud83e\udd9e"
+  },
+  {
+    "repo": "facebook/react",
+    "stars": 245283,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "The library for web and native user interfaces."
+  },
+  {
+    "repo": "vuejs/vue",
+    "stars": 209811,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "This is the repo for Vue 2. For Vue 3, go to https://github.com/vuejs/core"
+  },
+  {
+    "repo": "tensorflow/tensorflow",
+    "stars": 195272,
+    "language": "C++",
+    "license": "apache-2.0",
+    "description": "An Open Source Machine Learning Framework for Everyone"
+  },
+  {
+    "repo": "affaan-m/ECC",
+    "stars": 192875,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "The agent harness performance optimization system. Skills, instincts, memory, se"
+  },
+  {
+    "repo": "ultraworkers/claw-code",
+    "stars": 192525,
+    "language": "Rust",
+    "license": "mit",
+    "description": "The repo is finally unlocked. enjoy the party! The fastest repo in history to su"
+  },
+  {
+    "repo": "microsoft/vscode",
+    "stars": 185341,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "Visual Studio Code"
+  },
+  {
+    "repo": "ollama/ollama",
+    "stars": 172318,
+    "language": "Go",
+    "license": "mit",
+    "description": "Get up and running with Kimi-K2.5, GLM-5, MiniMax, DeepSeek, gpt-oss, Qwen, Gemm"
+  },
+  {
+    "repo": "NousResearch/hermes-agent",
+    "stars": 167623,
+    "language": "Python",
+    "license": "mit",
+    "description": "The agent that grows with you"
+  },
+  {
+    "repo": "anomalyco/opencode",
+    "stars": 165362,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "The open source coding agent."
+  },
+  {
+    "repo": "huggingface/transformers",
+    "stars": 160955,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "\ud83e\udd17 Transformers: the model-definition framework for state-of-the-art machine lear"
+  },
+  {
+    "repo": "langflow-ai/langflow",
+    "stars": 148754,
+    "language": "Python",
+    "license": "mit",
+    "description": "Langflow is a powerful tool for building and deploying AI-powered agents and wor"
+  },
+  {
+    "repo": "airbnb/javascript",
+    "stars": 148116,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "JavaScript Style Guide"
+  },
+  {
+    "repo": "vercel/next.js",
+    "stars": 139598,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "The React Framework"
+  },
+  {
+    "repo": "langchain-ai/langchain",
+    "stars": 137664,
+    "language": "Python",
+    "license": "mit",
+    "description": "The agent engineering platform."
+  },
+  {
+    "repo": "microsoft/PowerToys",
+    "stars": 133497,
+    "language": "C#",
+    "license": "mit",
+    "description": "Microsoft PowerToys is a collection of utilities that supercharge productivity a"
+  },
+  {
+    "repo": "facebook/react-native",
+    "stars": 125890,
+    "language": "C++",
+    "license": "mit",
+    "description": "A framework for building native applications using React"
+  },
+  {
+    "repo": "microsoft/markitdown",
+    "stars": 125192,
+    "language": "Python",
+    "license": "mit",
+    "description": "Python tool for converting files and office documents to Markdown."
+  },
+  {
+    "repo": "excalidraw/excalidraw",
+    "stars": 124021,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "Virtual whiteboard for sketching hand-drawn like diagrams"
+  },
+  {
+    "repo": "kubernetes/kubernetes",
+    "stars": 122474,
+    "language": "Go",
+    "license": "apache-2.0",
+    "description": "Production-Grade Container Scheduling and Management"
+  },
+  {
+    "repo": "electron/electron",
+    "stars": 121419,
+    "language": "C++",
+    "license": "mit",
+    "description": ":electron: Build cross-platform desktop apps with JavaScript, HTML, and CSS"
+  },
+  {
+    "repo": "shadcn-ui/ui",
+    "stars": 115050,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "A set of beautifully-designed, accessible components and a code distribution pla"
+  },
+  {
+    "repo": "ggml-org/llama.cpp",
+    "stars": 113065,
+    "language": "C++",
+    "license": "mit",
+    "description": "LLM inference in C/C++"
+  },
+  {
+    "repo": "mrdoob/three.js",
+    "stars": 112666,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "JavaScript 3D Library."
+  },
+  {
+    "repo": "godotengine/godot",
+    "stars": 111168,
+    "language": "C++",
+    "license": "mit",
+    "description": "Godot Engine \u2013 Multi-platform 2D and 3D game engine"
+  },
+  {
+    "repo": "axios/axios",
+    "stars": 109076,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "Promise based HTTP client for the browser and node.js"
+  },
+  {
+    "repo": "microsoft/TypeScript",
+    "stars": 108947,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "TypeScript is a superset of JavaScript that compiles to clean JavaScript output."
+  },
+  {
+    "repo": "denoland/deno",
+    "stars": 106867,
+    "language": "Rust",
+    "license": "mit",
+    "description": "A modern runtime for JavaScript and TypeScript."
+  },
+  {
+    "repo": "fatedier/frp",
+    "stars": 106839,
+    "language": "Go",
+    "license": "apache-2.0",
+    "description": "A fast reverse proxy to help you expose a local server behind a NAT or firewall"
+  },
+  {
+    "repo": "github/spec-kit",
+    "stars": 105935,
+    "language": "Python",
+    "license": "mit",
+    "description": "\ud83d\udcab Toolkit to help you get started with Spec-Driven Development"
+  },
+  {
+    "repo": "google-gemini/gemini-cli",
+    "stars": 104604,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "An open-source AI agent that brings the power of Gemini directly into your termi"
+  },
+  {
+    "repo": "deepseek-ai/DeepSeek-V3",
+    "stars": 103623,
+    "language": "Python",
+    "license": "mit",
+    "description": ""
+  },
+  {
+    "repo": "react/create-react-app",
+    "stars": 103374,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "Set up a modern web app by running one command."
+  },
+  {
+    "repo": "microsoft/terminal",
+    "stars": 103308,
+    "language": "C++",
+    "license": "mit",
+    "description": "The new Windows Terminal and the original Windows console host, all in the same"
+  },
+  {
+    "repo": "supabase/supabase",
+    "stars": 103022,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "The Postgres development platform. Supabase gives you a dedicated Postgres datab"
+  },
+  {
+    "repo": "garrytan/gstack",
+    "stars": 102712,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "Use Garry Tan's exact Claude Code setup: 23 opinionated tools that serve as CEO,"
+  },
+  {
+    "repo": "openai/whisper",
+    "stars": 100524,
+    "language": "Python",
+    "license": "mit",
+    "description": "Robust Speech Recognition via Large-Scale Weak Supervision"
+  },
+  {
+    "repo": "angular/angular",
+    "stars": 100135,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "Deliver web apps with confidence \ud83d\ude80"
+  },
+  {
+    "repo": "fastapi/fastapi",
+    "stars": 98515,
+    "language": "Python",
+    "license": "mit",
+    "description": "FastAPI framework, high performance, easy to learn, fast to code, ready for prod"
+  },
+  {
+    "repo": "mui/material-ui",
+    "stars": 98368,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "Material UI: Comprehensive React component library that implements Google's Mate"
+  },
+  {
+    "repo": "ant-design/ant-design",
+    "stars": 98152,
+    "language": "TypeScript",
+    "license": "mit",
+    "description": "An enterprise-class UI design language and React UI library"
+  },
+  {
+    "repo": "nvbn/thefuck",
+    "stars": 97122,
+    "language": "Python",
+    "license": "mit",
+    "description": "Magnificent app which corrects your previous console command."
+  },
+  {
+    "repo": "microsoft/Web-Dev-For-Beginners",
+    "stars": 95791,
+    "language": "JavaScript",
+    "license": "mit",
+    "description": "24 Lessons, 12 Weeks, Get Started as a Web Developer"
+  },
+  {
+    "repo": "browser-use/browser-use",
+    "stars": 95550,
+    "language": "Python",
+    "license": "mit",
+    "description": "\ud83c\udf10 Make websites accessible for AI agents. Automate tasks online with ease."
+  },
+  {
+    "repo": "puppeteer/puppeteer",
+    "stars": 94371,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "JavaScript API for Chrome and Firefox"
+  },
+  {
+    "repo": "microsoft/playwright",
+    "stars": 89425,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "Playwright is a framework for Web Testing and Automation. It allows testing Chro"
+  },
+  {
+    "repo": "bitcoin/bitcoin",
+    "stars": 89192,
+    "language": "C++",
+    "license": "mit",
+    "description": "Bitcoin Core integration/staging tree"
+  },
+  {
+    "repo": "gin-gonic/gin",
+    "stars": 88561,
+    "language": "Go",
+    "license": "mit",
+    "description": "Gin is a high-performance HTTP web framework written in Go. It provides a Martin"
+  },
+  {
+    "repo": "gohugoio/hugo",
+    "stars": 88243,
+    "language": "Go",
+    "license": "apache-2.0",
+    "description": "The world\u2019s fastest framework for building websites."
+  },
+  {
+    "repo": "opencv/opencv",
+    "stars": 87637,
+    "language": "C++",
+    "license": "apache-2.0",
+    "description": "Open Source Computer Vision Library"
+  },
+  {
+    "repo": "home-assistant/core",
+    "stars": 87296,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": ":house_with_garden: Open source home automation that puts local control and priv"
+  },
+  {
+    "repo": "macrozheng/mall",
+    "stars": 83686,
+    "language": "Java",
+    "license": "apache-2.0",
+    "description": "mall\u9879\u76ee\u662f\u4e00\u5957\u7535\u5546\u7cfb\u7edf\uff0c\u5305\u62ec\u524d\u53f0\u5546\u57ce\u7cfb\u7edf\u53ca\u540e\u53f0\u7ba1\u7406\u7cfb\u7edf\uff0c\u57fa\u4e8eSpring Boot+MyBatis\u5b9e\u73b0\uff0c\u91c7\u7528Docker\u5bb9\u5668\u5316\u90e8\u7f72\u3002 \u524d\u53f0\u5546\u57ce\u7cfb\u7edf\u5305\u542b\u9996\u9875\u95e8"
+  },
+  {
+    "repo": "infiniflow/ragflow",
+    "stars": 81249,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "RAGFlow is a leading open-source Retrieval-Augmented Generation (RAG) engine tha"
+  },
+  {
+    "repo": "farion1231/cc-switch",
+    "stars": 81022,
+    "language": "Rust",
+    "license": "mit",
+    "description": "A cross-platform desktop All-in-One assistant for Claude Code, Codex, OpenCode,"
+  },
+  {
+    "repo": "vllm-project/vllm",
+    "stars": 81016,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "A high-throughput and memory-efficient inference and serving engine for LLMs"
+  },
+  {
+    "repo": "spring-projects/spring-boot",
+    "stars": 80723,
+    "language": "Java",
+    "license": "apache-2.0",
+    "description": "Spring Boot helps you to create Spring-powered, production-grade applications an"
+  },
+  {
+    "repo": "junegunn/fzf",
+    "stars": 80536,
+    "language": "Go",
+    "license": "mit",
+    "description": ":cherry_blossom: A command-line fuzzy finder"
+  },
+  {
+    "repo": "TauricResearch/TradingAgents",
+    "stars": 79604,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "TradingAgents: Multi-Agents LLM Financial Trading Framework"
+  },
+  {
+    "repo": "PaddlePaddle/PaddleOCR",
+    "stars": 78531,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "Turn any PDF or image document into structured data for your AI. A powerful, lig"
+  },
+  {
+    "repo": "jesseduffield/lazygit",
+    "stars": 78464,
+    "language": "Go",
+    "license": "mit",
+    "description": "simple terminal UI for git commands"
+  },
+  {
+    "repo": "thedotmack/claude-mem",
+    "stars": 78200,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "Persistent Context Across Sessions for Every Agent \u2013  Captures everything your a"
+  },
+  {
+    "repo": "nomic-ai/gpt4all",
+    "stars": 77352,
+    "language": "C++",
+    "license": "mit",
+    "description": "GPT4All: Run Local LLMs on Any Device. Open-source and available for commercial"
+  },
+  {
+    "repo": "tesseract-ocr/tesseract",
+    "stars": 74278,
+    "language": "C++",
+    "license": "apache-2.0",
+    "description": "Tesseract Open Source OCR Engine (main repository)"
+  },
+  {
+    "repo": "ocornut/imgui",
+    "stars": 73453,
+    "language": "C++",
+    "license": "mit",
+    "description": "Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencie"
+  },
+  {
+    "repo": "apache/superset",
+    "stars": 73008,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "Apache Superset is a Data Visualization and Data Exploration Platform"
+  },
+  {
+    "repo": "caddyserver/caddy",
+    "stars": 72741,
+    "language": "Go",
+    "license": "apache-2.0",
+    "description": "Fast and extensible multi-platform HTTP/1-2-3 web server with automatic HTTPS"
+  },
+  {
+    "repo": "moby/moby",
+    "stars": 71602,
+    "language": "Go",
+    "license": "apache-2.0",
+    "description": "The Moby Project - a collaborative project for the container ecosystem to assemb"
+  },
+  {
+    "repo": "hiyouga/LlamaFactory",
+    "stars": 71588,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "Unified Efficient Fine-Tuning of 100+ LLMs & VLMs (ACL 2024)"
+  },
+  {
+    "repo": "danielmiessler/SecLists",
+    "stars": 71155,
+    "language": "PHP",
+    "license": "mit",
+    "description": "SecLists is the security tester's companion. It's a collection of multiple types"
+  },
+  {
+    "repo": "nektos/act",
+    "stars": 70490,
+    "language": "Go",
+    "license": "mit",
+    "description": "Run your GitHub Actions locally \ud83d\ude80"
+  },
+  {
+    "repo": "NationalSecurityAgency/ghidra",
+    "stars": 68859,
+    "language": "Java",
+    "license": "apache-2.0",
+    "description": "Ghidra is a software reverse engineering (SRE) framework"
+  },
+  {
+    "repo": "apache/echarts",
+    "stars": 66418,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "Apache ECharts is a powerful, interactive charting and data visualization librar"
+  },
+  {
+    "repo": "unclecode/crawl4ai",
+    "stars": 66268,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "\ud83d\ude80\ud83e\udd16 Crawl4AI: Open-source LLM Friendly Web Crawler & Scraper. Don't be shy, join"
+  },
+  {
+    "repo": "ruvnet/RuView",
+    "stars": 65988,
+    "language": "Rust",
+    "license": "mit",
+    "description": "\u03c0 RuView turns commodity WiFi signals into real-time spatial intelligence, vital"
+  },
+  {
+    "repo": "unslothai/unsloth",
+    "stars": 65133,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "Unsloth Studio is a web UI for training and running open models like Gemma 4, Qw"
+  },
+  {
+    "repo": "prometheus/prometheus",
+    "stars": 64177,
+    "language": "Go",
+    "license": "apache-2.0",
+    "description": "The Prometheus monitoring system and time series database."
+  },
+  {
+    "repo": "keras-team/keras",
+    "stars": 64083,
+    "language": "Python",
+    "license": "apache-2.0",
+    "description": "Deep Learning for humans"
+  },
+  {
+    "repo": "traefik/traefik",
+    "stars": 63334,
+    "language": "Go",
+    "license": "mit",
+    "description": "The Cloud Native Application Proxy"
+  },
+  {
+    "repo": "rust-lang/rustlings",
+    "stars": 62978,
+    "language": "Rust",
+    "license": "mit",
+    "description": ":crab: Small exercises to get you used to reading and writing Rust code!"
+  },
+  {
+    "repo": "cline/cline",
+    "stars": 62326,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "Autonomous coding agent as an SDK, IDE extension, or CLI assistant."
+  },
+  {
+    "repo": "jgraph/drawio-desktop",
+    "stars": 61289,
+    "language": "JavaScript",
+    "license": "apache-2.0",
+    "description": "Official electron build of draw.io"
+  },
+  {
+    "repo": "usememos/memos",
+    "stars": 60121,
+    "language": "Go",
+    "license": "mit",
+    "description": "Open-source, self-hosted note-taking tool built for quick capture. Markdown-nati"
+  },
+  {
+    "repo": "spring-projects/spring-framework",
+    "stars": 59977,
+    "language": "Java",
+    "license": "apache-2.0",
+    "description": "Spring Framework"
+  },
+  {
+    "repo": "pocketbase/pocketbase",
+    "stars": 58608,
+    "language": "Go",
+    "license": "mit",
+    "description": "Open Source realtime backend in 1 file"
+  },
+  {
+    "repo": "rails/rails",
+    "stars": 58468,
+    "language": "Ruby",
+    "license": "mit",
+    "description": "Ruby on Rails"
+  },
+  {
+    "repo": "rclone/rclone",
+    "stars": 57388,
+    "language": "Go",
+    "license": "mit",
+    "description": "\"rsync for cloud storage\" - Google Drive, S3, Dropbox, Backblaze B2, One Drive,"
+  },
+  {
+    "repo": "coollabsio/coolify",
+    "stars": 55936,
+    "language": "PHP",
+    "license": "apache-2.0",
+    "description": "An open-source, self-hostable PaaS alternative to Vercel, Heroku & Netlify that"
+  },
+  {
+    "repo": "PowerShell/PowerShell",
+    "stars": 53611,
+    "language": "C#",
+    "license": "mit",
+    "description": "PowerShell for every system!"
+  },
+  {
+    "repo": "mozilla/pdf.js",
+    "stars": 53369,
+    "language": "JavaScript",
+    "license": "apache-2.0",
+    "description": "PDF Reader in JavaScript"
+  },
+  {
+    "repo": "nexu-io/open-design",
+    "stars": 52309,
+    "language": "TypeScript",
+    "license": "apache-2.0",
+    "description": "\ud83c\udfa8 Local-first, open-source  Claude Design alternative. \u26a1 19 Skills \u00b7 \u2728 71 brand-"
+  },
+  {
+    "repo": "etcd-io/etcd",
+    "stars": 51741,
+    "language": "Go",
+    "license": "apache-2.0",
+    "description": "Distributed reliable key-value store for the most critical data of a distributed"
+  },
+  {
+    "repo": "google/guava",
+    "stars": 51489,
+    "language": "Java",
+    "license": "apache-2.0",
+    "description": "Google core libraries for Java"
+  },
+  {
+    "repo": "jekyll/jekyll",
+    "stars": 51449,
+    "language": "Ruby",
+    "license": "mit",
+    "description": ":globe_with_meridians: Jekyll is a blog-aware static site generator in Ruby"
+  },
+  {
+    "repo": "dbeaver/dbeaver",
+    "stars": 50224,
+    "language": "Java",
+    "license": "apache-2.0",
+    "description": "Free universal database tool and SQL client"
+  },
+  {
+    "repo": "huginn/huginn",
+    "stars": 49327,
+    "language": "Ruby",
+    "license": "mit",
+    "description": "Create agents that monitor and act on your behalf.  Your agents are standing by!"
+  },
+  {
+    "repo": "tw93/Pake",
+    "stars": 49048,
+    "language": "Rust",
+    "license": "mit",
+    "description": "\ud83e\udd31\ud83c\udffb Turn any webpage into a desktop app with one command."
+  },
+  {
+    "repo": "skylot/jadx",
+    "stars": 48712,
+    "language": "Java",
+    "license": "apache-2.0",
+    "description": "Dex to Java decompiler"
+  },
+  {
+    "repo": "ReactiveX/RxJava",
+    "stars": 48251,
+    "language": "Java",
+    "license": "apache-2.0",
+    "description": "RxJava \u2013 Reactive Extensions for the JVM \u2013 a library for composing asynchronous"
+  },
+  {
+    "repo": "astral-sh/ruff",
+    "stars": 47687,
+    "language": "Rust",
+    "license": "mit",
+    "description": "An extremely fast Python linter and code formatter, written in Rust."
+  },
+  {
+    "repo": "ClickHouse/ClickHouse",
+    "stars": 47616,
+    "language": "C++",
+    "license": "apache-2.0",
+    "description": "ClickHouse\u00ae is a real-time analytics database management system"
+  }
+]

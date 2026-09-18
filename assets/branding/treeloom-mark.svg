@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 64" width="52" height="64">
+  <!-- Treeloom Thread-Tree Mark — Symbol Only -->
+  <!-- Trunk: three warp strands -->
+  <line x1="20" y1="34" x2="17" y2="62" stroke="#3fb950" stroke-width="3" stroke-linecap="round"/>
+  <line x1="26" y1="30" x2="26" y2="63" stroke="#39d353" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="32" y1="34" x2="35" y2="62" stroke="#3fb950" stroke-width="3" stroke-linecap="round"/>
+  <!-- Canopy: three weft arcs, top to bottom -->
+  <path d="M14 20 Q22 12 26 8 Q30 12 38 20" stroke="#39d353" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M8 28 Q18 18 26 14 Q34 18 44 28" stroke="#3fb950" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M3 36 Q14 24 26 20 Q38 24 49 36" stroke="#2ea043" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Amber cross-nodes at warp/weft intersections -->
+  <circle cx="26" cy="8" r="1.8" fill="#d29922"/>
+  <circle cx="26" cy="14" r="2" fill="#d29922"/>
+  <circle cx="26" cy="20" r="2" fill="#d29922"/>
+</svg>

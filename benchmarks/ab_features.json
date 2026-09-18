@@ -1,0 +1,46 @@
+{
+  "test_repo": "/home/user/source/featbit",
+  "queries": "benchmarks/queries/featbit-clean-100.jsonl",
+  "variants": [
+    {
+      "name": "baseline-dense-only",
+      "tool_args": {
+        "use_hybrid": false,
+        "use_hyde": false,
+        "use_summary_vector": false,
+        "use_graph_scoring": false
+      }
+    },
+    {
+      "name": "hybrid-only",
+      "tool_args": {
+        "use_hybrid": true,
+        "use_hyde": false,
+        "use_summary_vector": false,
+        "use_graph_scoring": false
+      }
+    },
+    {
+      "name": "hybrid-plus-hyde",
+      "tool_args": {
+        "use_hybrid": true,
+        "use_hyde": true,
+        "use_summary_vector": false,
+        "use_graph_scoring": false
+      }
+    },
+    {
+      "name": "hybrid-plus-hyde-plus-summary",
+      "tool_args": {
+        "use_hybrid": true,
+        "use_hyde": true,
+        "use_summary_vector": true,
+        "use_graph_scoring": false
+      }
+    },
+    {
+      "name": "all-on",
+      "tool_args": {}
+    }
+  ]
+}

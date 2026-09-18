@@ -1,0 +1,60 @@
+# Simple deployment profile — see docs/simple-mode.md.
+#
+# One container by default: Postgres (jobs/queue/caches, unchanged from full
+# mode). No TEI, no Milvus, no Neo4j, no observability stack — vectors live
+# in embedded LanceDB, the graph in embedded SQLite (both inside the host
+# indexer process), and embeddings/HyDE/summaries come from a cloud
+# OpenAI-compatible API. Reranking runs in-process on CPU.
+#
+# The mcp-server service below serves the deprecated HTTP+SSE MCP transport
+# and is opt-in only, behind the http-mcp profile (COMPOSE_PROFILES=http-mcp
+# docker compose -f docker-compose.simple.yml up -d mcp-server). The default
+# MCP transport is stdio via the `treeloom-mcp` console script, spawned
+# directly by your MCP client — no container needed.
+#
+#   docker compose -f docker-compose.simple.yml up -d
+#
+# Run from the repo root so the compose project name matches the full-mode
+# file — the postgres-data volume is intentionally shared, so an evaluator
+# upgrading to the full stack keeps their job/source state.
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      # Docker-published ports bypass host firewalls (ufw); loopback binding
+      # keeps this container reachable from this machine only.
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-treeloom}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-treeloom_pass}
+      - POSTGRES_DB=${POSTGRES_DB:-treeloom}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  mcp-server:
+    build: .
+    # Opt-in only: `COMPOSE_PROFILES=http-mcp docker compose -f
+    # docker-compose.simple.yml up -d mcp-server`. See the header comment
+    # above — the default MCP transport is stdio, which starts no container.
+    profiles: ["http-mcp"]
+    ports:
+      # Docker-published ports bypass host firewalls (ufw); loopback binding
+      # keeps this container reachable from this machine only.
+      - "127.0.0.1:${MCP_SERVER_PORT:-8000}:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # The MCP server is a pure HTTP proxy to the host indexer — this is
+      # its only required service var.
+      - INDEXER_URL=${DOCKER_INDEXER_URL:-http://host.docker.internal:8001}
+      # Read inside the container, so they must be forwarded explicitly —
+      # a value set only in .env would silently never arrive.
+      - TREELOOM_MCP_ALLOWED_ORIGINS=${TREELOOM_MCP_ALLOWED_ORIGINS:-}
+      - TREELOOM_MCP_SERVICE_ACCOUNT=${TREELOOM_MCP_SERVICE_ACCOUNT:-}
+      - TREELOOM_MCP_API_KEY=${TREELOOM_MCP_API_KEY:-}
+      - OTEL_SDK_DISABLED=true
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

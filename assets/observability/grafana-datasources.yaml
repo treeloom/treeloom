@@ -1,0 +1,24 @@
+# Auto-provisioned Grafana datasource for Tempo. Mount this at
+# /etc/grafana/provisioning/datasources/datasources.yaml in the Grafana
+# container (already configured in docker-compose.yml).
+apiVersion: 1
+
+datasources:
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    uid: tempo
+    isDefault: false
+    jsonData:
+      httpMethod: GET
+      tracesToLogsV2:
+        # If a Loki datasource named "Loki" is also provisioned, this
+        # enables the "trace ↔ log" cross-link via the otelTraceID tag
+        # Phase 7 of the OTel rollout injects.
+        datasourceUid: loki
+        spanStartTimeShift: '-1h'
+        spanEndTimeShift: '1h'
+        tags: [{ key: 'service.name', value: 'service' }]
+        filterByTraceID: true
+        filterBySpanID: false

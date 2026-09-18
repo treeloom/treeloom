@@ -1,0 +1,20 @@
+"""Backward-compatible re-export of mcp server module."""
+from treeloom.application.mcp_server import (
+    explain_code,
+    find_callers,
+    find_definition,
+    find_references,
+    graph_explore,
+    index_file,
+    index_directory,
+    index_repo,
+    index_graph,
+    rebuild_all_graphs,
+    list_indexed_sources,
+    remove_indexed_source,
+    search_code,
+    search_code_enhanced,
+    get_index_job,
+    wait_for_index_job,
+    mcp,
+)  # noqa: F401

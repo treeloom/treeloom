@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" width="200" height="220">
+  <!-- Treeloom Stacked Lockup: Mark above Wordmark + Tagline -->
+  <!-- Thread-Tree Mark (centered) -->
+  <g transform="translate(76, 15)">
+    <line x1="20" y1="34" x2="17" y2="62" stroke="#3fb950" stroke-width="3" stroke-linecap="round"/>
+    <line x1="26" y1="30" x2="26" y2="63" stroke="#39d353" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="32" y1="34" x2="35" y2="62" stroke="#3fb950" stroke-width="3" stroke-linecap="round"/>
+    <path d="M14 20 Q22 12 26 8 Q30 12 38 20" stroke="#39d353" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M8 28 Q18 18 26 14 Q34 18 44 28" stroke="#3fb950" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M3 36 Q14 24 26 20 Q38 24 49 36" stroke="#2ea043" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="26" cy="8" r="1.8" fill="#d29922"/>
+    <circle cx="26" cy="14" r="2" fill="#d29922"/>
+    <circle cx="26" cy="20" r="2" fill="#d29922"/>
+  </g>
+  <!-- Wordmark (centered) -->
+  <text x="100" y="135" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="600" font-size="28" letter-spacing="-0.03em" fill="#ffffff" text-anchor="middle">treeloom</text>
+  <!-- Tagline (centered) -->
+  <text x="100" y="158" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="9" font-weight="400" letter-spacing="0.08em" fill="#8b949e" text-anchor="middle">PARSE TREES · WEAVE GRAPHS</text>
+</svg>

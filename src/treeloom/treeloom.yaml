@@ -1,0 +1,29 @@
+# Treeloom Configuration
+# This file is loaded by load_yaml_config() in treeloom.infrastructure.config.
+# The active backend is set below; other backends are commented out.
+
+backend: milvus
+
+milvus:
+  host: localhost
+  port: "19530"
+  # collection_name: treeloom_chunks
+  # vector_dim: 1024
+
+# chromadb:
+#   path: ./chroma_data
+
+# ── Authorization ─────────────────────────────────────────────────────
+
+auth:
+  # Set to true to require API key auth on mutating endpoints.
+  # Search and health remain open regardless.
+  enabled: false
+
+# ── Metadata Database ─────────────────────────────────────────────────
+
+database:
+  # PostgreSQL connection string for metadata (users, sources).
+  # Optional — falls back to in-memory mode if unset or unreachable.
+  url: "${DATABASE_URL}"
+

@@ -1,0 +1,42 @@
+{
+  "test_repo": "/home/user/source/featbit",
+  "queries": "benchmarks/queries/featbit-clean-100.jsonl",
+  "models": [
+    {
+      "name": "jina-v2-base-code",
+      "model_id": "jinaai/jina-embeddings-v2-base-code",
+      "dim": 768,
+      "extra_args": ""
+    },
+    {
+      "name": "code-rank-embed",
+      "model_id": "nomic-ai/CodeRankEmbed",
+      "dim": 768,
+      "extra_args": ""
+    },
+    {
+      "name": "sfr-code-400m",
+      "model_id": "Salesforce/SFR-Embedding-Code-400M_R",
+      "dim": 1024,
+      "extra_args": ""
+    },
+    {
+      "name": "jina-v3",
+      "model_id": "jinaai/jina-embeddings-v3",
+      "dim": 1024,
+      "extra_args": ""
+    },
+    {
+      "name": "unixcoder-base",
+      "model_id": "microsoft/unixcoder-base",
+      "dim": 768,
+      "extra_args": "--pooling cls"
+    },
+    {
+      "name": "bge-base-en",
+      "model_id": "BAAI/bge-base-en-v1.5",
+      "dim": 768,
+      "extra_args": "--pooling cls"
+    }
+  ]
+}

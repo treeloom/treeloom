@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Dark theme tokens — conform to the registered Product (Treeloom) design
+ * system (designmd://product). Derived from the legacy operator dashboard
+ * palette (assets/branding/BRAND.md):
+ *   --bg-deep   #0d1117  -> background
+ *   --bg-panel  #161b22  -> card / popover
+ *   --text-primary #c9d1d9 -> foreground
+ *   --accent    #3fb950  -> primary (brand green) / accent-secondary
+ *   --amber     #d29922  -> warning / accent-tertiary (weave nodes)
+ *   --red       #ef4444  -> destructive / danger
+ * Values expressed as HSL channels for shadcn-style `hsl(var(--token))`.
+ */
+@layer base {
+  :root,
+  .dark {
+    --background: 213 27% 7%; /* #0d1117 */
+    --foreground: 213 16% 82%; /* #c9d1d9 */
+
+    --card: 215 21% 11%; /* #161b22 */
+    --card-foreground: 213 16% 82%;
+
+    --popover: 215 21% 11%;
+    --popover-foreground: 213 16% 82%;
+
+    --primary: 130 49% 49%; /* #3fb950 brand green */
+    --primary-foreground: 213 27% 7%; /* dark text on green */
+
+    --secondary: 213 18% 14%; /* #1c232b surface */
+    --secondary-foreground: 216 19% 85%;
+
+    --muted: 213 18% 14%;
+    --muted-foreground: 215 14% 58%; /* #8b949e */
+
+    --accent: 213 18% 16%;
+    --accent-foreground: 216 19% 85%;
+
+    --destructive: 0 84% 60%; /* #ef4444 */
+    --destructive-foreground: 213 16% 92%;
+
+    --border: 0 0% 100% / 0.08; /* rgba(255,255,255,0.08) */
+    --input: 0 0% 100% / 0.08;
+    --ring: 130 49% 49%;
+
+    /* Brand greens (assets/branding/BRAND.md): the woven-canopy scale */
+    --bright-green: 132 62% 53%; /* #39d353 — highlights, active states, canopy arcs */
+    --deep-green: 131 55% 40%; /* #2ea043 — deep structure, bottom canopy layer */
+
+    /* Brand status accents */
+    --success: 130 49% 49%; /* #3fb950 */
+    --warning: 41 73% 52%; /* #d29922 */
+    --danger: 0 84% 60%; /* #ef4444 */
+
+    /* Design-system brand-role accents (Product · designmd://product) */
+    --accent-secondary: 130 49% 49%; /* #3fb950 Signal Green — positive / structural / graph accents */
+    --accent-tertiary: 41 73% 52%; /* #d29922 Node Amber — weave intersections, sparing highlights */
+    --amber: 41 73% 52%; /* alias of accent-tertiary */
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "cv01", "ss03";
+    min-height: 100vh;
+  }
+}

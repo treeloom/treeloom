@@ -1,0 +1,42 @@
+# Tempo single-binary, local-disk storage. Mirrors the upstream "monolithic"
+# example with the OTLP receiver enabled and the metrics_generator off
+# (we already have Prometheus for metrics — see CLAUDE.md).
+server:
+  http_listen_port: 3200
+  grpc_listen_port: 9095
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+ingester:
+  trace_idle_period: 10s
+  max_block_duration: 5m
+
+compactor:
+  compaction:
+    block_retention: 24h
+
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /var/tempo/wal
+    local:
+      path: /var/tempo/blocks
+
+# Default per-trace size limit is 5MB. Treeloom index_job spans wrap every
+# per-file span (parse_and_chunk + embed.chunks + summaries.* + milvus.insert_chunks
+# + graph.index_file per file), so a job over more than ~200 files blows the
+# default and Tempo silently rejects the whole trace — Grafana then shows
+# "<root span not yet received>". 50MB covers jobs into the thousands of files;
+# the real long-term fix is to split each file into its own root trace.
+overrides:
+  defaults:
+    global:
+      max_bytes_per_trace: 50000000

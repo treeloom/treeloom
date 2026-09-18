@@ -1,0 +1,136 @@
+# Treeloom freshness & incremental-indexing alert rules.
+#
+# Metric contract (defined in src/treeloom/infrastructure/metrics.py, see docs/incremental-indexing.md):
+#   treeloom_source_index_stale{source_id}        Gauge 0/1  — indexed SHA != current HEAD
+#   treeloom_source_index_age_seconds{source_id}  Gauge      — seconds since last index
+#   treeloom_incremental_jobs_total{status}        Counter    — status: done|failed|dead_letter
+#   treeloom_incremental_job_duration_seconds      Histogram  — runner wall-clock time
+#   treeloom_merge_to_searchable_seconds           Histogram  — webhook-accept → job done
+#   treeloom_queue_saturation                      Gauge 0..1 — depth / MAX_QUEUE_DEPTH
+#   treeloom_webhook_shed_total                    Counter    — 429s issued to git providers
+#   treeloom_dead_letter_jobs_total                Counter    — jobs that exhausted MAX_JOB_ATTEMPTS
+#
+# Thresholds (adjust per deployment by editing the value: lines below):
+#   STALE_AGE_THRESHOLD_SECONDS   = 86400   (24 h — stale for > 24 h fires SourceIndexStale)
+#   STALE_DURATION_MINUTES        = 10      (must be stale for at least 10 m before alerting)
+#   MERGE_P95_THRESHOLD_SECONDS   = 300     (5 min — p95 merge-to-searchable SLO)
+#   MERGE_EVAL_WINDOW             = 5m      (histogram rate window)
+#   QUEUE_SATURATION_THRESHOLD    = 0.8     (80 % of MAX_QUEUE_DEPTH — default 500)
+#   QUEUE_SATURATION_DURATION_MIN = 5       (sustained for 5 min)
+#   DEAD_LETTER_WINDOW            = 15m     (any dead-letters in 15 min fires immediately)
+
+groups:
+  - name: treeloom_freshness
+    interval: 60s
+    rules:
+
+      # -----------------------------------------------------------------------
+      # SourceIndexStale
+      # Fires when any source's indexed SHA differs from current HEAD AND has
+      # been stale for longer than STALE_AGE_THRESHOLD_SECONDS (24 h default).
+      # The per-source stale flag is set by the lag sampler
+      # (FRESHNESS_SAMPLER_ENABLED=true, FRESHNESS_SAMPLE_INTERVAL_SECONDS=60).
+      # Runbook: check GET /sources/<source_id>/staleness, then POST /index-repo
+      # with force=true if no job is already running.
+      # -----------------------------------------------------------------------
+      - alert: SourceIndexStale
+        expr: |
+          (
+            treeloom_source_index_stale == 1
+            and
+            # age threshold: 86400 s = 24 h
+            treeloom_source_index_age_seconds > 86400
+          )
+        for: 10m
+        labels:
+          severity: warning
+          team: treeloom
+        annotations:
+          summary: "Source {{ $labels.source_id }} index is stale"
+          description: >
+            Source {{ $labels.source_id }} has treeloom_source_index_stale=1
+            and index age {{ $value | humanizeDuration }} (threshold: 24h).
+            The indexed commit SHA does not match current HEAD.
+            Check GET /sources/{{ $labels.source_id }}/staleness.
+            Re-index with: POST /index-repo {"source_id":"{{ $labels.source_id }}","force":true}
+
+      # -----------------------------------------------------------------------
+      # MergeToSearchableSlow
+      # Fires when the p95 of treeloom_merge_to_searchable_seconds (webhook-
+      # accept → incremental job done) exceeds MERGE_P95_THRESHOLD_SECONDS
+      # (300 s = 5 min). This is the end-to-end freshness lag visible to search
+      # clients. Investigate embedding throughput, INDEX_CONCURRENCY, or queue
+      # depth.  Note: git ls-remote latency or large changed-file lists can
+      # spike this; oversized pushes fall back to full re-index (MAX_CHANGED_FILES).
+      # -----------------------------------------------------------------------
+      - alert: MergeToSearchableSlow
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(treeloom_merge_to_searchable_seconds_bucket[5m])) by (le)
+          # threshold: 300 s = 5 min
+          ) > 300
+        for: 5m
+        labels:
+          severity: warning
+          team: treeloom
+        annotations:
+          summary: "Treeloom merge-to-searchable p95 exceeds 300 s"
+          description: >
+            The p95 merge-to-searchable latency is {{ $value | humanizeDuration }},
+            above the 300 s SLO.  Webhook-triggered changes are taking longer
+            than expected to become searchable.
+            Check: queue saturation (treeloom_queue_saturation),
+            INDEX_CONCURRENCY, TEI embedding service health.
+
+      # -----------------------------------------------------------------------
+      # IndexQueueSaturated
+      # Fires when treeloom_queue_saturation exceeds 0.8 (80 % of
+      # MAX_QUEUE_DEPTH, default 500) for 5 consecutive minutes.
+      # Above this threshold the webhook handler returns 429 to git providers
+      # and increments treeloom_webhook_shed_total.
+      # Action: scale INDEX_CONCURRENCY, add indexer workers, or raise
+      # MAX_QUEUE_DEPTH if the backlog is expected to drain quickly.
+      # -----------------------------------------------------------------------
+      - alert: IndexQueueSaturated
+        expr: |
+          # threshold: 0.8 = 80 % of MAX_QUEUE_DEPTH
+          treeloom_queue_saturation > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: treeloom
+        annotations:
+          summary: "Treeloom index queue saturation above 80%"
+          description: >
+            treeloom_queue_saturation={{ $value | humanizePercentage }},
+            sustained above 0.8 for > 5 min.
+            New webhook deliveries are being shed (HTTP 429).
+            Check treeloom_webhook_shed_total and GET /status for queue depth.
+            Increase INDEX_CONCURRENCY or MAX_QUEUE_DEPTH (default 500).
+
+      # -----------------------------------------------------------------------
+      # WebhookDeadLetters
+      # Fires immediately when any incremental job enters DEAD_LETTER state
+      # within the last 15 minutes.  A job reaches dead_letter after exhausting
+      # MAX_JOB_ATTEMPTS (default 3) retries.  These are NOT retried
+      # automatically on restart — use POST /jobs/{id}/retry after fixing the
+      # root cause.
+      # -----------------------------------------------------------------------
+      - alert: WebhookDeadLetters
+        expr: |
+          # window: 15 m — any new dead-letters fire immediately (for: 0m)
+          increase(treeloom_dead_letter_jobs_total[15m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          team: treeloom
+        annotations:
+          summary: "Treeloom incremental job(s) entered dead-letter state"
+          description: >
+            {{ $value }} incremental job(s) exhausted MAX_JOB_ATTEMPTS retries
+            in the last 15 minutes and are now in DEAD_LETTER state.
+            List them: GET /jobs/dead-letter (admin auth required).
+            After fixing the root cause, re-queue: POST /jobs/{id}/retry.
+            Do NOT restart the indexer to retry — dead-letter jobs are excluded
+            from startup recovery by design.

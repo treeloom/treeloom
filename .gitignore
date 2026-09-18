@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment
+.env
+
+# Docker
+data/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+*.orig
+
+# Pytest
+.pytest_cache/
+
+#benchmarking
+benchmarks/results
+/results*.jsonl
+
+# local experiment data — never ship
+benchmarks/queries/dspy/
+benchmarks/queries/dspy_probe/
+benchmarks/queries/*-enhanced.jsonl
+
+data-gym-cache/
+.worktrees/
+jobs.db
+
+# Runtime state
+chroma_data/
+logs/
+anticipate-socialmedia-*.md
+
+# Local agent/tooling state (not project artifacts)
+.claude/
+.superpowers/
+.deepeval/
+.env.bak.*
+Untitled-*.md
+
+# Serena MCP agent tooling state — local only, never ship
+.serena/
+
+# Local planning notes; never committed.
+docs/superpowers/
+
+# Local SAST scan config and outputs (machine-specific; never committed).
+/config.yaml
+/run_manifest_*.json
+security-scan/
+src/treeloom/security-scan/

@@ -1,0 +1,10 @@
+# torch + CUDA come from the base image (pytorch/pytorch CUDA runtime).
+fastapi>=0.110
+uvicorn[standard]>=0.29
+transformers>=4.40,<5
+einops>=0.7
+sentencepiece>=0.2
+# flash-attn is optional. jina-reranker-v2 falls back to eager attention when
+# it's absent (slower, but builds in minutes instead of compiling for ~30).
+# If the container logs a `flash_attn` ImportError, add to the Dockerfile:
+#   RUN pip install flash-attn --no-build-isolation

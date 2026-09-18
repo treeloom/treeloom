@@ -1,0 +1,450 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Index freshness, incremental-job throughput/latency, queue saturation, and dead-letters for the Treeloom indexer. Prometheus-backed.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Source Freshness",
+      "type": "row"
+    },
+    {
+      "id": 1,
+      "type": "table",
+      "title": "Per-source staleness",
+      "description": "treeloom_source_index_stale == 1 means indexed SHA differs from current HEAD. treeloom_source_index_age_seconds is time since the last successful index. Refreshed every FRESHNESS_SAMPLE_INTERVAL_SECONDS (default 60s).",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 10, "w": 16, "x": 0, "y": 1 },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "stale" },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "green", "value": null },
+                    { "color": "red", "value": 1 }
+                  ]
+                }
+              },
+              { "id": "mappings", "value": [
+                { "type": "value", "options": { "0": { "text": "fresh" }, "1": { "text": "STALE" } } }
+              ]}
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "age_seconds" },
+            "properties": [
+              { "id": "unit", "value": "s" },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "green", "value": null },
+                    { "color": "yellow", "value": 3600 },
+                    { "color": "red", "value": 86400 }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "sortBy": [{ "displayName": "stale", "desc": true }]
+      },
+      "targets": [
+        {
+          "expr": "treeloom_source_index_stale",
+          "legendFormat": "{{source_id}}",
+          "instant": true,
+          "refId": "A",
+          "format": "table"
+        },
+        {
+          "expr": "treeloom_source_index_age_seconds",
+          "legendFormat": "{{source_id}}",
+          "instant": true,
+          "refId": "B",
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Value #A": "stale",
+              "Value #B": "age_seconds",
+              "source_id": "source_id"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Stale sources",
+      "description": "Count of sources where treeloom_source_index_stale == 1.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 16, "y": 1 },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "mappings": [],
+          "unit": "short"
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background" },
+      "targets": [
+        {
+          "expr": "sum(treeloom_source_index_stale == 1) or vector(0)",
+          "legendFormat": "stale",
+          "instant": true,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Max index age",
+      "description": "Maximum treeloom_source_index_age_seconds across all sources. Alerts fire above 24h.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 16, "y": 6 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 3600 },
+              { "color": "red", "value": 86400 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background" },
+      "targets": [
+        {
+          "expr": "max(treeloom_source_index_age_seconds) or vector(0)",
+          "legendFormat": "max age",
+          "instant": true,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "id": 101,
+      "title": "Incremental Job Throughput",
+      "type": "row"
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Incremental job rate by status",
+      "description": "rate(treeloom_incremental_jobs_total[5m]) broken down by status (done|failed|dead_letter). A rising failed/dead_letter series signals systematic failures.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 12 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "done" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "failed" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "dead_letter" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "expr": "rate(treeloom_incremental_jobs_total{status=\"done\"}[5m])",
+          "legendFormat": "done",
+          "refId": "done"
+        },
+        {
+          "expr": "rate(treeloom_incremental_jobs_total{status=\"failed\"}[5m])",
+          "legendFormat": "failed",
+          "refId": "failed"
+        },
+        {
+          "expr": "rate(treeloom_incremental_jobs_total{status=\"dead_letter\"}[5m])",
+          "legendFormat": "dead_letter",
+          "refId": "dead_letter"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Dead-letters (last 1h)",
+      "description": "increase(treeloom_dead_letter_jobs_total[1h]). Any value above 0 should be investigated — see GET /jobs/dead-letter.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 12 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "mappings": []
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background" },
+      "targets": [
+        {
+          "expr": "increase(treeloom_dead_letter_jobs_total[1h]) or vector(0)",
+          "legendFormat": "dead-letters",
+          "instant": true,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Dead-letters (1h rolling increase)",
+      "description": "increase(treeloom_dead_letter_jobs_total[1h]) over time. A rising trend means retries are exhausted; use POST /jobs/{id}/retry to re-queue after fixing the root cause.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "drawStyle": "line", "lineWidth": 2 },
+          "color": { "fixedColor": "red", "mode": "fixed" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "increase(treeloom_dead_letter_jobs_total[1h]) or vector(0)",
+          "legendFormat": "dead-letters/h",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 20 },
+      "id": 102,
+      "title": "Latency",
+      "type": "row"
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Incremental job duration p50 / p95",
+      "description": "Quantiles of treeloom_incremental_job_duration_seconds (runner wall time). p95 > 300s may indicate heavy repos or embedding bottlenecks.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 21 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": { "drawStyle": "line", "lineWidth": 2 }
+        }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(treeloom_incremental_job_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p50",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(treeloom_incremental_job_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Merge-to-searchable p50 / p95",
+      "description": "Quantiles of treeloom_merge_to_searchable_seconds (webhook-accept → job done). This is the end-to-end freshness lag visible to search clients. Alert fires when p95 > 300s.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 21 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": { "drawStyle": "line", "lineWidth": 2 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "p95" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(treeloom_merge_to_searchable_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p50",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(treeloom_merge_to_searchable_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
+      "id": 103,
+      "title": "Queue Saturation & Backpressure",
+      "type": "row"
+    },
+    {
+      "id": 9,
+      "type": "gauge",
+      "title": "Queue saturation",
+      "description": "treeloom_queue_saturation in [0, 1] = depth / MAX_QUEUE_DEPTH (default 500). Above 0.8 the alert fires and new webhooks receive 429.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 30 },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.6 },
+              { "color": "red", "value": 0.8 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "showThresholdLabels": true, "showThresholdMarkers": true },
+      "targets": [
+        {
+          "expr": "treeloom_queue_saturation or vector(0)",
+          "legendFormat": "saturation",
+          "instant": true,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Queue saturation over time",
+      "description": "treeloom_queue_saturation time series. Sustained above 0.8 indicates ingest is outrunning indexer throughput; increase INDEX_CONCURRENCY or add workers.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 10, "x": 6, "y": 30 },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "unit": "percentunit",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 15 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.6 },
+              { "color": "red", "value": 0.8 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "treeloom_queue_saturation or vector(0)",
+          "legendFormat": "saturation",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Webhook shed rate (429s)",
+      "description": "rate(treeloom_webhook_shed_total[5m]) — webhooks rejected with 429 because the queue is at MAX_QUEUE_DEPTH. Git providers will retry; persistent shedding means the indexer can't keep up.",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 30 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "drawStyle": "bars", "lineWidth": 1, "fillOpacity": 60 },
+          "color": { "fixedColor": "orange", "mode": "fixed" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "rate(treeloom_webhook_shed_total[5m]) or vector(0)",
+          "legendFormat": "shed/s",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": ["treeloom", "freshness", "incremental", "prometheus"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Treeloom Freshness & Incremental Indexing",
+  "uid": "treeloom-freshness",
+  "version": 1,
+  "weekStart": ""
+}

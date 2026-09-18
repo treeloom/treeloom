@@ -1,0 +1,5 @@
+# torch + CUDA come from the base image (pytorch/pytorch CUDA runtime).
+fastapi>=0.110
+uvicorn[standard]>=0.29
+# Qwen3 architecture needs transformers >= 4.51.
+transformers>=4.51,<5

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <title>Treeloom — Operator</title>
+    <link rel="icon" type="image/svg+xml" href="/brand/treeloom-favicon.svg" />
+    <!-- Runtime config: a render-blocking classic script in <head>, so
+         window.__TREELOOM_API_BASE__ is set before the (deferred) module
+         bundle runs. The deploy container overwrites this file. -->
+    <script src="/config.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

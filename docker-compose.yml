@@ -1,0 +1,301 @@
+services:
+  tei-embedding:
+    image: ghcr.io/huggingface/text-embeddings-inference:cuda-1.9
+    ports:
+      - "${TEI_EMBEDDING_PORT:?TEI_EMBEDDING_PORT is required in .env}:80"
+    volumes:
+      - tei-embedding-data:/data
+    environment:
+      - HF_TOKEN=${HF_TOKEN?HF_TOKEN must be present in .env (may be empty)}
+      - NVIDIA_VISIBLE_DEVICES=0
+    command: --model-id ${EMBEDDING_MODEL:?EMBEDDING_MODEL is required in .env} --dtype float16 ${EMBEDDING_EXTRA_ARGS?EMBEDDING_EXTRA_ARGS must be defined in .env (may be empty)}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  tei-embedding-cpu:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9
+    ports:
+      - "${TEI_EMBEDDING_CPU_PORT:?TEI_EMBEDDING_CPU_PORT is required in .env}:80"
+    volumes:
+      - tei-embedding-cpu-data:/data
+    environment:
+      - HF_TOKEN=${HF_TOKEN?HF_TOKEN must be present in .env (may be empty)}
+    command: --model-id ${EMBEDDING_MODEL:?EMBEDDING_MODEL is required in .env} --dtype float16 ${EMBEDDING_EXTRA_ARGS?EMBEDDING_EXTRA_ARGS must be defined in .env (may be empty)}
+    restart: unless-stopped
+
+  tei-reranker:
+    image: ghcr.io/huggingface/text-embeddings-inference:cuda-1.9
+    ports:
+      - "${TEI_RERANKER_PORT:?TEI_RERANKER_PORT is required in .env}:80"
+    volumes:
+      - tei-reranker-data:/data
+    environment:
+      - HF_TOKEN=${HF_TOKEN?HF_TOKEN must be present in .env (may be empty)}
+    command: --model-id ${RERANKER_MODEL:?RERANKER_MODEL is required in .env} --dtype float16 ${RERANKER_EXTRA_ARGS?RERANKER_EXTRA_ARGS must be defined in .env (may be empty)}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+    restart: unless-stopped
+    # image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9
+
+  # Optional drop-in reranker for models TEI can't serve (jina-reranker-v2-*).
+  # Opt-in: `docker compose --profile jina up -d jina-reranker`. Exposes the
+  # same /rerank contract as TEI; point RERANKER_URL at it (default :8085) to
+  # A/B a different reranker without touching treeloom code.
+  jina-reranker:
+    profiles: ["jina"]
+    build:
+      context: ./services/jina_reranker
+    ports:
+      - "${JINA_RERANKER_PORT:-8085}:80"
+    volumes:
+      - jina-reranker-data:/data
+    environment:
+      - HF_TOKEN=${HF_TOKEN?HF_TOKEN must be present in .env (may be empty)}
+      - MODEL_ID=${JINA_RERANKER_MODEL:-jinaai/jina-reranker-v2-base-multilingual}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${JINA_RERANKER_GPU:-0}"]
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  # Qwen3 reranker — quality upgrade over the TEI bge default (+0.04 r@1,
+  # +0.06 r@5, +0.056 MRR on featbit-clean-100) at ~3x search latency.
+  # TEI can't host Qwen3 rerankers, hence this transformers-based drop-in.
+  # Opt-in: COMPOSE_PROFILES=qwen3 in .env (run.sh starts it) or
+  # `docker compose --profile qwen3 up -d qwen3-reranker`, then point
+  # RERANKER_URL at :8086 and restart the indexer. See services/qwen3_reranker/README.md.
+  qwen3-reranker:
+    profiles: ["qwen3"]
+    build:
+      context: ./services/qwen3_reranker
+    ports:
+      - "${QWEN3_RERANKER_PORT:-8086}:80"
+    volumes:
+      - qwen3-reranker-data:/data
+    environment:
+      - HF_TOKEN=${HF_TOKEN?HF_TOKEN must be present in .env (may be empty)}
+      - MODEL_ID=${QWEN3_RERANKER_MODEL:-tomaarsen/Qwen3-Reranker-0.6B-seq-cls}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${QWEN3_RERANKER_GPU:-0}"]
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-treeloom}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-treeloom_pass}
+      - POSTGRES_DB=${POSTGRES_DB:-treeloom}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Self-contained local infra for the quickstart (COMPOSE_PROFILES=local-infra).
+  # Production/dev deployments that already run Neo4j and Milvus elsewhere just
+  # drop the profile and point NEO4J_URI / MILVUS_URI at them in .env.
+  neo4j:
+    profiles: ["local-infra"]
+    image: neo4j:5-community
+    ports:
+      - "${NEO4J_BOLT_PORT:-7687}:7687"
+      - "${NEO4J_HTTP_PORT:-7474}:7474"
+    environment:
+      - NEO4J_AUTH=${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-treeloom_pass}
+    volumes:
+      - neo4j-data:/data
+    restart: unless-stopped
+
+  # Milvus standalone with embedded etcd + local storage (single container,
+  # no etcd/minio sidecars). Plain HTTP — set MILVUS_URI=http://localhost:19530.
+  milvus:
+    profiles: ["local-infra"]
+    image: milvusdb/milvus:v2.5.4
+    command: ["milvus", "run", "standalone"]
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - ETCD_USE_EMBED=true
+      - ETCD_DATA_DIR=/var/lib/milvus/etcd
+      - ETCD_CONFIG_PATH=/milvus/configs/embedEtcd.yaml
+      - COMMON_STORAGETYPE=local
+    volumes:
+      - milvus-data:/var/lib/milvus
+      - ./assets/milvus/embedEtcd.yaml:/milvus/configs/embedEtcd.yaml:ro
+    ports:
+      - "${MILVUS_PORT:-19530}:19530"
+      - "9091:9091"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      start_period: 90s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile.indexer
+    ports:
+      - "${INDEXER_PORT:-8001}:8001"
+    environment:
+      - DATABASE_URL=postgresql://treeloom:treeloom_pass@postgres:5432/treeloom
+      - MILVUS_URI=${MILVUS_URI?MILVUS_URI must be set}
+      - NEO4J_URI=${NEO4J_URI?NEO4J_URI must be set}
+      - NEO4J_USER=${NEO4J_USER:-neo4j}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-treeloom_pass}
+      - LLM_URL=${LLM_URL?LLM_URL must be set}
+      - LLM_MODEL=${LLM_MODEL?LLM_MODEL must be set}
+      - VECTOR_DIM=${VECTOR_DIM:-768}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-jinaai/jina-embeddings-v2-base-code}
+      - EMBEDDING_URLS=${EMBEDDING_URLS:-}
+      - EMBEDDING_FALLBACK_URLS=${EMBEDDING_FALLBACK_URLS:-}
+      # Reranker must resolve to the in-Docker service. The .env default
+      # (localhost:8081) targets a host-based indexer and is unreachable from
+      # inside this container; rerank then fails silently and graph_rescore
+      # zeroes every score (final_score = ALPHA*0 + ...).
+      - RERANKER_URL=${DOCKER_RERANKER_URL:-http://tei-reranker:80}
+      - VECTOR_STORE=${VECTOR_STORE:-milvus}
+      - INDEX_CONCURRENCY=${INDEX_CONCURRENCY:-8}
+      - INDEX_FILE_CONCURRENCY=${INDEX_FILE_CONCURRENCY:-24}
+      - LLM_CONCURRENCY=${LLM_CONCURRENCY:-8}
+      - USE_SUMMARY_VECTOR=${USE_SUMMARY_VECTOR:-1}
+      - JOB_QUEUE_POLL_INTERVAL=${JOB_QUEUE_POLL_INTERVAL:-1.0}
+      - NEO4J_OP_TIMEOUT_SECONDS=${NEO4J_OP_TIMEOUT_SECONDS:-30}
+      - RUST_MIN_STACK=8388608
+      - AUTH_ENABLED=${AUTH_ENABLED:-true}
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY:-}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_TRACES_SAMPLER=${OTEL_TRACES_SAMPLER:-always_on}
+      - STRUCTURED_LOG_FILE=${STRUCTURED_LOG_FILE:-}
+    volumes:
+      - ${BENCHMARK_REPOS_DIR:-./benchmark-repos}:/data/repos:ro
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  mcp-server:
+    build: .
+    # Opt-in only: `COMPOSE_PROFILES=http-mcp docker compose up mcp-server`.
+    # The default MCP transport is stdio (`treeloom-mcp`), which has no network
+    # surface. This container serves the HTTP+SSE transport, deprecated upstream
+    # since MCP protocol revision 2025-03-26, and is not started by default.
+    profiles: ["http-mcp"]
+    ports:
+      # Loopback only: the MCP transport has no authentication, so it must
+      # not be published on all interfaces (MCP spec: bind 127.0.0.1 when
+      # running locally). Front it with a reverse proxy for remote access.
+      - "127.0.0.1:${MCP_SERVER_PORT:?MCP_SERVER_PORT is required in .env}:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - INDEXER_URL=${DOCKER_INDEXER_URL:?DOCKER_INDEXER_URL is required in .env}
+      # MCP transport security and credential policy. These are read from the
+      # process environment inside the container, so a value set only in .env
+      # never reaches the code that reads it — leaving the Origin guard on its
+      # loopback-only default and the service-account opt-in permanently off,
+      # with nothing in the logs to say so.
+      - TREELOOM_MCP_ALLOWED_ORIGINS=${TREELOOM_MCP_ALLOWED_ORIGINS:-}
+      - TREELOOM_MCP_SERVICE_ACCOUNT=${TREELOOM_MCP_SERVICE_ACCOUNT:-}
+      - TREELOOM_MCP_API_KEY=${TREELOOM_MCP_API_KEY:-}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${MCP_OTEL_ENDPOINT:-http://otel-collector:4317}
+      - OTEL_TRACES_SAMPLER=${OTEL_TRACES_SAMPLER:-always_on}
+      - OTEL_TRACES_SAMPLER_ARG=${OTEL_TRACES_SAMPLER_ARG:-1.0}
+    # mcp-server is a pure API consumer — it proxies all search/index requests
+    # to the host-based indexer via host.docker.internal.  No direct dependency
+    # on TEI, Milvus, Neo4j, or LLM services.
+
+  # ── Operator UI v2 (standalone SPA) ──────────────────
+  # Static SPA served by nginx. The BROWSER calls the indexer directly at
+  # TREELOOM_API_BASE, which must be reachable from the browser (the indexer
+  # runs on the HOST at localhost:8001) — NOT an in-compose service name, so
+  # there is no depends_on. The indexer's CORS allow-list
+  # (TREELOOM_CORS_ORIGINS) must include this UI's origin. Default port
+  # 3001 because grafana owns 3000 in this compose.
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "${UI_PORT:-3001}:80"
+    environment:
+      - TREELOOM_API_BASE=${TREELOOM_API_BASE:-http://localhost:8001}
+    restart: unless-stopped
+
+  # ── Observability stack (OTel collector + Tempo) ─────────────────
+  # The indexer (running on the host) ships spans to the collector via
+  # localhost:4317; the collector batches and forwards every span to Tempo
+  # (always_on head sampling, no tail sampling — that belongs in a central
+  # collector; see assets/observability/otel-collector-config.yaml).
+  # Grafana (if you bring it up — not bundled here) reads from Tempo.
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.115.1
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./assets/observability/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4317:4317"   # OTLP/gRPC — host indexer ships here
+      - "4318:4318"   # OTLP/HTTP
+    depends_on:
+      - tempo
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./assets/observability/tempo-config.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    ports:
+      - "3200:3200"   # Tempo HTTP API (Grafana reads here)
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_AUTH_ANONYMOUS_ENABLED=${GRAFANA_ANON_ENABLED:-false}
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor,traceQLStreaming
+    volumes:
+      - ./assets/observability/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+      - ./assets/observability/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./assets/grafana:/etc/grafana/provisioning/dashboards-json:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - tempo
+    restart: unless-stopped
+
+volumes:
+  tei-embedding-data:
+  tei-embedding-cpu-data:
+  tei-reranker-data:
+  jina-reranker-data:
+  qwen3-reranker-data:
+  postgres-data:
+  neo4j-data:
+  milvus-data:
+  tempo-data:
+  grafana-data:
