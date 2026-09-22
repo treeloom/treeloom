@@ -1,9 +1,34 @@
 name: CI
 
+# Document-only and image-only changes never touch the code the unit suite
+# exercises, so they skip this workflow entirely. GitHub applies
+# `paths-ignore` only when EVERY changed file matches, so a PR that mixes a
+# doc edit with a code change still runs. (If `unit-tests` ever becomes a
+# required status check, a skipped run leaves the check unreported and the
+# PR unmergeable — at that point add a stand-in job on the inverse filter
+# that reports the same check name instead of relying on this skip.)
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.svg"
+      - "**/*.png"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.gif"
+      - "**/*.webp"
+      - "**/*.ico"
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.svg"
+      - "**/*.png"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.gif"
+      - "**/*.webp"
+      - "**/*.ico"
 
 jobs:
   unit-tests:
