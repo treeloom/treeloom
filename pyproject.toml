@@ -86,7 +86,7 @@ Repository = "https://github.com/treeloom/treeloom"
 treeloom-mcp = "treeloom.application.mcp_stdio:main"
 
 [build-system]
-requires = ["setuptools>=75"]
+requires = ["setuptools>=84.0.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
