@@ -21,7 +21,11 @@ jobs:
       - id: filter
         uses: dorny/paths-filter@v3
         with:
-          # Anything that is NOT a document or image counts as code.
+          # Anything that is NOT a document or image counts as code. The
+          # patterns are all negations, so a file must satisfy EVERY one of
+          # them to count (the default quantifier `some` would let a .md
+          # file match via `!**/*.svg` and run the suite on docs-only PRs).
+          predicate-quantifier: every
           filters: |
             code:
               - '!**/*.md'
