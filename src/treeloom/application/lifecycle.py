@@ -8,9 +8,10 @@ config, plus the cancellation that unwinds them.
 `startup` and `shutdown` are plain coroutines taking the FastAPI app as an
 argument — they read and write `app.state`, and importing the app from
 `indexer_service` would be the cycle this split exists to avoid.
-indexer_service registers them with `app.add_event_handler` bound through
-functools.partial, so the binding is an explicit call at a known point rather
-than a decorator that attaches to whatever definition happens to follow it.
+indexer_service binds them in its `_lifespan` context manager (passed as
+`FastAPI(lifespan=...)`), which awaits `startup(app)` on enter and
+`shutdown(app)` on exit — the ASGI lifespan protocol, since Starlette 1.6
+removed the older `add_event_handler`/`on_event` API.
 
 Nothing here imports `indexer_service`; state comes from `indexer_state`.
 """

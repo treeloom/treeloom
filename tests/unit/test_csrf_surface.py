@@ -48,10 +48,23 @@ def app(mock_milvus_collection, mock_neo4j_driver):
 
 
 def _routes(app):
-    for r in app.routes:
-        methods = getattr(r, "methods", None)
-        if methods:
-            yield r, methods
+    # FastAPI 0.14x keeps each include_router() as a nested _IncludedRouter
+    # node (real routes under .original_router.routes) instead of flattening
+    # into app.routes; older versions flattened. Walk both shapes, otherwise
+    # every auth/webhook route silently drops out of this audit.
+    def walk(routes):
+        for r in routes:
+            methods = getattr(r, "methods", None)
+            if methods:
+                yield r, methods
+                continue
+            inner = getattr(r, "original_router", None) or (
+                r if hasattr(r, "routes") else None
+            )
+            if inner is not None:
+                yield from walk(inner.routes)
+
+    yield from walk(app.routes)
 
 
 class TestNoStateChangingGet:
