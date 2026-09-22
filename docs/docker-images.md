@@ -44,7 +44,7 @@ form `YYYY.M.D`, for example `2026.9.22`.
 |---|---|
 | Git tag `vYYYY.M.D[.N]` | `YYYY.M.D[.N]`, `YYYY.M` (rolling month), `latest` |
 | Manual workflow run (any branch) | `edge`, `sha-<short commit>` |
-| Pull request touching a Dockerfile | build only, nothing pushed |
+| Pull request touching a Dockerfile | build only, nothing pushed; amd64 only, reranker skipped, superseded by a newer push to the PR |
 
 `latest` always tracks the most recent release tag, never `main`. The
 rolling month tag (`2026.9`) moves to the newest release within that month.
