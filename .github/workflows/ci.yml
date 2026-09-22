@@ -20,5 +20,12 @@ jobs:
         # via adapter/factory tests, so the
         # full suite needs the all-backends + simple extras too.
         run: pip install -e ".[dev,all-backends,simple]"
+      - name: Provide the quickstart env
+        # The indexer fails loud at import when its service vars are unset,
+        # and the unit suite imports it (services are mocked, never
+        # contacted). src/treeloom/__init__.py loads the repo-root .env, so
+        # the quickstart example doubles as the CI config — which also
+        # keeps .env.example loadable.
+        run: cp .env.example .env
       - name: Unit tests
         run: pytest tests/unit -q

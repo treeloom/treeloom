@@ -150,11 +150,20 @@ _LOGIN_PURGE_INTERVAL = float(
 )
 
 
-# Kept well past the window so a purge can never delete a row the throttle is
-# still counting, whatever the clock skew between workers.
-_LOGIN_PURGE_RETENTION = int(
-    os.environ.get("TREELOOM_LOGIN_PURGE_RETENTION_SECONDS", "0")
-) or max(rauth.LOGIN_WINDOW_SECONDS * 4, 3600)
+def _login_purge_retention() -> int:
+    """Retention for login_attempts rows, in seconds.
+
+    Kept well past the window so a purge can never delete a row the throttle
+    is still counting, whatever the clock skew between workers. Unset, blank
+    (``.env.example`` ships ``TREELOOM_LOGIN_PURGE_RETENTION_SECONDS=``) and
+    ``0`` all mean "derive it" — a blank used to reach ``int("")`` and abort
+    the indexer at import.
+    """
+    raw = os.environ.get("TREELOOM_LOGIN_PURGE_RETENTION_SECONDS", "").strip()
+    return (int(raw) if raw else 0) or max(rauth.LOGIN_WINDOW_SECONDS * 4, 3600)
+
+
+_LOGIN_PURGE_RETENTION = _login_purge_retention()
 
 
 async def _run_login_attempt_purge() -> None:
