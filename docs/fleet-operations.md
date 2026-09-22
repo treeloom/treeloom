@@ -21,7 +21,7 @@ Everything here is built on existing per-source features, with no extra storage:
   per-source staleness to Prometheus. See
   [incremental-indexing.md §3](incremental-indexing.md#3-freshness-metrics).
 
-The main [README](../README.md) covers the rest of the indexer API (`CLAUDE.md` at
+The main [README](https://github.com/treeloom/treeloom/blob/main/README.md) covers the rest of the indexer API (`CLAUDE.md` at
 the repo root holds the maintainers' more detailed notes).
 
 ---

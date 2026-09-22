@@ -377,6 +377,12 @@ pytest tests/unit -q     # 1,656 Detroit-style unit tests (no services needed)
 Retrieval quality is validated separately against a live stack via the
 benchmark harness (`python -m treeloom.benchmark run|ab|agentic`).
 
+## Documentation
+
+[docs/index.md](docs/index.md) maps every document under `docs/`: a one-line
+summary of each, how far to trust it, and a recommended reading order for
+evaluating, operating, and changing Treeloom.
+
 ## Brand
 
 See [assets/branding/](assets/branding/) for logo files, favicon, and full brand
