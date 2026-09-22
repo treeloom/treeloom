@@ -1,37 +1,41 @@
 name: CI
 
-# Document-only and image-only changes never touch the code the unit suite
-# exercises, so they skip this workflow entirely. GitHub applies
-# `paths-ignore` only when EVERY changed file matches, so a PR that mixes a
-# doc edit with a code change still runs. (If `unit-tests` ever becomes a
-# required status check, a skipped run leaves the check unreported and the
-# PR unmergeable — at that point add a stand-in job on the inverse filter
-# that reports the same check name instead of relying on this skip.)
+# `unit-tests` is a required status check on main (repository ruleset), so
+# it must REPORT on every PR. A trigger-level `paths-ignore` would skip the
+# whole workflow on document-only changes and leave the check unreported,
+# which blocks the merge. Instead a cheap `changes` job classifies the diff
+# and `unit-tests` is skipped (not absent) when only docs/images changed —
+# a skipped required job counts as passing.
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "**/*.md"
-      - "**/*.svg"
-      - "**/*.png"
-      - "**/*.jpg"
-      - "**/*.jpeg"
-      - "**/*.gif"
-      - "**/*.webp"
-      - "**/*.ico"
   pull_request:
-    paths-ignore:
-      - "**/*.md"
-      - "**/*.svg"
-      - "**/*.png"
-      - "**/*.jpg"
-      - "**/*.jpeg"
-      - "**/*.gif"
-      - "**/*.webp"
-      - "**/*.ico"
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          # Anything that is NOT a document or image counts as code.
+          filters: |
+            code:
+              - '!**/*.md'
+              - '!**/*.svg'
+              - '!**/*.png'
+              - '!**/*.jpg'
+              - '!**/*.jpeg'
+              - '!**/*.gif'
+              - '!**/*.webp'
+              - '!**/*.ico'
+
   unit-tests:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
