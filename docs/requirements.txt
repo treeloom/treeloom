@@ -2,4 +2,4 @@
 # Not part of the package's runtime or dev extras.
 sphinx>=8,<9
 myst-parser>=4,<5
-furo>=2024
+furo>=2025.12.19
