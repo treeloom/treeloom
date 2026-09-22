@@ -1,0 +1,67 @@
+# Build context for the root Dockerfiles (Dockerfile = mcp-server,
+# Dockerfile.indexer = indexer). Mirrors .gitignore plus everything an image
+# never needs. Keeping this tight matters twice over: the indexer Dockerfile
+# does `COPY . .`, so without this file a live `.env` would be baked into the
+# published image, and the untracked `data/` HF cache (~3.7 GB) plus `.git`
+# would be shipped to the daemon on every build.
+
+# Secrets and local config — never in an image
+.env
+.env.*
+!.env.example
+!.env.simple.example
+.env.bak.*
+
+# VCS
+.git
+.gitignore
+.github
+
+# Python build/runtime residue
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+data-gym-cache/
+
+# Model caches, runtime state, experiment output
+data/
+chroma_data/
+logs/
+jobs.db
+benchmarks/results
+/results*.jsonl
+security-scan/
+
+# Not needed inside either image
+benchmarks/
+tests/
+docs/
+assets/
+scripts/
+services/
+ui/
+uv.lock
+*.md
+!README.md
+docker-compose*.yml
+Dockerfile*
+run.sh
+run-simple.sh
+stop.sh
+stop-simple.sh
+
+# Local agent/tooling state
+.claude/
+.superpowers/
+.deepeval/
+.serena/
+.worktrees/
+.vscode/
+.idea/
+.DS_Store

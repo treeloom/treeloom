@@ -8,9 +8,10 @@ config, plus the cancellation that unwinds them.
 `startup` and `shutdown` are plain coroutines taking the FastAPI app as an
 argument — they read and write `app.state`, and importing the app from
 `indexer_service` would be the cycle this split exists to avoid.
-indexer_service registers them with `app.add_event_handler` bound through
-functools.partial, so the binding is an explicit call at a known point rather
-than a decorator that attaches to whatever definition happens to follow it.
+indexer_service binds them in its `_lifespan` context manager (passed as
+`FastAPI(lifespan=...)`), which awaits `startup(app)` on enter and
+`shutdown(app)` on exit — the ASGI lifespan protocol, since Starlette 1.6
+removed the older `add_event_handler`/`on_event` API.
 
 Nothing here imports `indexer_service`; state comes from `indexer_state`.
 """
@@ -149,11 +150,20 @@ _LOGIN_PURGE_INTERVAL = float(
 )
 
 
-# Kept well past the window so a purge can never delete a row the throttle is
-# still counting, whatever the clock skew between workers.
-_LOGIN_PURGE_RETENTION = int(
-    os.environ.get("TREELOOM_LOGIN_PURGE_RETENTION_SECONDS", "0")
-) or max(rauth.LOGIN_WINDOW_SECONDS * 4, 3600)
+def _login_purge_retention() -> int:
+    """Retention for login_attempts rows, in seconds.
+
+    Kept well past the window so a purge can never delete a row the throttle
+    is still counting, whatever the clock skew between workers. Unset, blank
+    (``.env.example`` ships ``TREELOOM_LOGIN_PURGE_RETENTION_SECONDS=``) and
+    ``0`` all mean "derive it" — a blank used to reach ``int("")`` and abort
+    the indexer at import.
+    """
+    raw = os.environ.get("TREELOOM_LOGIN_PURGE_RETENTION_SECONDS", "").strip()
+    return (int(raw) if raw else 0) or max(rauth.LOGIN_WINDOW_SECONDS * 4, 3600)
+
+
+_LOGIN_PURGE_RETENTION = _login_purge_retention()
 
 
 async def _run_login_attempt_purge() -> None:

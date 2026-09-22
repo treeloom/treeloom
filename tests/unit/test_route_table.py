@@ -26,8 +26,26 @@ from fastapi.testclient import TestClient
 from treeloom.application.indexer_service import app
 
 
+def _walk_routes(routes):
+    """Yield every concrete (method-bearing) route, descending into routers.
+
+    FastAPI 0.14x stopped flattening ``include_router`` into ``app.routes``:
+    an included router is kept as a single ``_IncludedRouter`` node whose
+    ``original_router.routes`` holds the real ``APIRoute``s. Older versions
+    flattened them. Walking both shapes keeps this test meaningful on either.
+    """
+    for r in routes:
+        if hasattr(r, "methods"):
+            yield r
+        inner = getattr(r, "original_router", None) or (
+            r if not hasattr(r, "methods") and hasattr(r, "routes") else None
+        )
+        if inner is not None:
+            yield from _walk_routes(inner.routes)
+
+
 def _routes():
-    return [r for r in app.routes if hasattr(r, "methods")]
+    return list(_walk_routes(app.routes))
 
 
 class TestNoRouteIsBoundToAPrivateHelper:

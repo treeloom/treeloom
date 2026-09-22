@@ -8,6 +8,7 @@ import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+from contextlib import asynccontextmanager as _asynccontextmanager
 import logging
 from typing import Any
 
@@ -70,7 +71,25 @@ from treeloom.application.fleet import (
 )
 
 
-app = FastAPI(title="Treeloom Indexer")
+@_asynccontextmanager
+async def _lifespan(app: FastAPI):
+    """Bind lifecycle.startup/shutdown via the ASGI lifespan protocol.
+
+    Starlette 1.6 removed ``add_event_handler``/``on_event``; ``lifespan=``
+    is the supported form on every Starlette this project runs on. The
+    lifecycle module is resolved lazily because it imports state/runners
+    that are themselves imported further down this module.
+    """
+    from treeloom.application import lifecycle as _lc
+
+    await _lc.startup(app)
+    try:
+        yield
+    finally:
+        await _lc.shutdown(app)
+
+
+app = FastAPI(title="Treeloom Indexer", lifespan=_lifespan)
 
 # Shared mutable state — see that module on why it is used via the module
 # object rather than by importing the names.
@@ -90,8 +109,7 @@ from treeloom.application import routes_webhook as _routes_webhook
 
 # Lifecycle hooks live in lifecycle (stage 6/6). Registered explicitly
 # below rather than re-decorated, so the binding is a visible call.
-from functools import partial as _partial
-from treeloom.application import lifecycle as _lifecycle
+from treeloom.application import lifecycle as _lifecycle  # noqa: F401 — keeps the import graph as before; bound in _lifespan
 
 
 # Job execution lives in indexer_runners. Imported as a MODULE: a re-exported
@@ -137,10 +155,8 @@ app.add_middleware(
 
 app.include_router(_routes_auth.router)
 app.include_router(_routes_webhook.router)
-# startup/shutdown take the app as an argument (they read and write
-# app.state); partial keeps them async-callable for FastAPI.
-app.add_event_handler("startup", _partial(_lifecycle.startup, app))
-app.add_event_handler("shutdown", _partial(_lifecycle.shutdown, app))
+# startup/shutdown are bound by `_lifespan` (see the FastAPI construction
+# above), not by event handlers.
 
 
 class IndexFileRequest(BaseModel):
