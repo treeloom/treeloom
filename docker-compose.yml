@@ -80,6 +80,7 @@ services:
   # RERANKER_URL at :8086 and restart the indexer. See services/qwen3_reranker/README.md.
   qwen3-reranker:
     profiles: ["qwen3"]
+    image: ${TREELOOM_IMAGE_NAMESPACE:-treeloom}/qwen3-reranker:${TREELOOM_IMAGE_TAG:-latest}
     build:
       context: ./services/qwen3_reranker
     ports:
@@ -153,6 +154,11 @@ services:
     restart: unless-stopped
 
   indexer:
+    # Every Treeloom-built service carries an `image:` next to its `build:` so
+    # the published Docker Hub images (docs/docker-images.md) can be pulled
+    # with `docker compose pull`, while `docker compose build` keeps working
+    # and tags its output with the same name.
+    image: ${TREELOOM_IMAGE_NAMESPACE:-treeloom}/indexer:${TREELOOM_IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: Dockerfile.indexer
@@ -195,6 +201,7 @@ services:
     restart: unless-stopped
 
   mcp-server:
+    image: ${TREELOOM_IMAGE_NAMESPACE:-treeloom}/mcp-server:${TREELOOM_IMAGE_TAG:-latest}
     build: .
     # Opt-in only: `COMPOSE_PROFILES=http-mcp docker compose up mcp-server`.
     # The default MCP transport is stdio (`treeloom-mcp`), which has no network
@@ -233,6 +240,7 @@ services:
   # (TREELOOM_CORS_ORIGINS) must include this UI's origin. Default port
   # 3001 because grafana owns 3000 in this compose.
   ui:
+    image: ${TREELOOM_IMAGE_NAMESPACE:-treeloom}/ui:${TREELOOM_IMAGE_TAG:-latest}
     build:
       context: ./ui
       dockerfile: Dockerfile

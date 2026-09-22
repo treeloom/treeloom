@@ -123,6 +123,12 @@ uvicorn treeloom.indexer_service:app --host 127.0.0.1 --port 8001
 > subprocess spawned by your MCP client (`treeloom-mcp`). The deprecated
 > HTTP+SSE transport is available with `COMPOSE_PROFILES=http-mcp`.
 
+Prebuilt images for the Treeloom services (`treeloom/indexer`,
+`treeloom/mcp-server`, `treeloom/ui`, `treeloom/qwen3-reranker`) are published
+to Docker Hub on every release; `docker compose pull` fetches them instead of
+building. See [docs/docker-images.md](docs/docker-images.md) for tags,
+platforms, and the release procedure.
+
 Point your MCP client at the `treeloom-mcp` console script — it reaches the
 host indexer directly via `INDEXER_URL` (no `host.docker.internal` needed on
 stdio):
