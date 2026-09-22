@@ -1,0 +1,4 @@
+# Review requests are auto-assigned to the owners below when a PR touches
+# matching paths. Order matters: the last matching pattern wins.
+
+* @rodgerbrennan
