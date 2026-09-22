@@ -25,6 +25,7 @@ Standalone symbol. Use for favicons, app icons, social avatars.
 
 - `assets/branding/treeloom-mark.svg` (PNG: `treeloom-mark.png`, 208x256)
 - Favicon: `assets/branding/treeloom-favicon.svg` (32x32, dark bg, rounded; PNG: `treeloom-favicon.png`, 128x128)
+- Avatar: `assets/branding/treeloom-avatar.png` (1000x1000, mark centered on the dark bg; the square profile image for Docker Hub, GitHub and social accounts)
 
 ### PNG Versions
 
