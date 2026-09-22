@@ -1,6 +1,6 @@
 # GPU reranker service for Qwen3-Reranker models (TEI can't host them).
 # torch + CUDA ship in the base image so we don't recompile them.
-FROM pytorch/pytorch:2.4.1-cuda12.1-cudnn9-runtime
+FROM pytorch/pytorch:2.5.1-cuda12.1-cudnn9-runtime
 
 WORKDIR /app
 
