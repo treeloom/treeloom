@@ -11,6 +11,11 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 5
+    # pyproject.toml declares `>=` floors, not pins. The default strategy
+    # raises the floor on every release (a PR that changes nothing CI
+    # installs and only excludes users on older versions); this one opens a
+    # PR only when a new release falls outside the declared range.
+    versioning-strategy: increase-if-necessary
     groups:
       python-minor-and-patch:
         update-types: ["minor", "patch"]
