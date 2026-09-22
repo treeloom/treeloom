@@ -19,7 +19,7 @@ more than the title:
 
 **Evaluating Treeloom** (about an hour):
 
-1. The [README](../README.md): what Treeloom is, the "semantic search, not
+1. The [README](https://github.com/treeloom/treeloom/blob/main/README.md): what Treeloom is, the "semantic search, not
    symbol lookup" framing, and the Quick Start.
 2. [Simple deployment mode](simple-mode.md) if you have no GPU, or the
    README's full-stack Quick Start if you do.
@@ -64,6 +64,7 @@ more than the title:
 | [incremental-indexing.md](incremental-indexing.md) | Feature doc | How a GitHub or Gitea push webhook becomes a changed-files job, retries and dead-lettering, backpressure, and the two load-test harnesses. |
 | [fleet-operations.md](fleet-operations.md) | Feature doc | Bulk onboarding from a manifest, the fleet health rollup, and the opt-in scheduled refresh for repositories whose HEAD has moved. |
 | [observability-runbook.md](observability-runbook.md) | Feature doc | Wiring metrics, logs, and traces from a deployment into a central OpenTelemetry, Prometheus, Loki, Tempo, and Grafana host. Written as a reference plan; some proposed compose profiles do not exist yet. |
+| [engineering-notes.md](engineering-notes.md) | Feature doc | The reference material moved out of `CLAUDE.md`: running the stack, simple mode, indexing and dev tasks, the benchmark CLI and its verdicts, jobs and queue, fleet, auth, tracing, and the prompt enhancer. Dense and verbatim; read the section you need. |
 
 ## Evidence and benchmarks
 
@@ -92,13 +93,15 @@ more than the title:
 
 ## Documents outside this folder
 
-- [README.md](../README.md): the public front door and Quick Start.
-- [CONTRIBUTING.md](../CONTRIBUTING.md): contribution gates, including that
+- [README.md](https://github.com/treeloom/treeloom/blob/main/README.md): the public front door and Quick Start.
+- [CONTRIBUTING.md](https://github.com/treeloom/treeloom/blob/main/CONTRIBUTING.md): contribution gates, including that
   retrieval changes need a benchmark run.
-- [SECURITY.md](../SECURITY.md): how to report a vulnerability.
-- [CLAUDE.md](../CLAUDE.md): the dense operational rulebook for maintainers
-  and coding agents. Long, and the place where house constraints live.
-- [assets/branding/BRAND.md](../assets/branding/BRAND.md): logo files,
+- [SECURITY.md](https://github.com/treeloom/treeloom/blob/main/SECURITY.md): how to report a vulnerability.
+- [CLAUDE.md](https://github.com/treeloom/treeloom/blob/main/CLAUDE.md): the short rulebook for maintainers and coding
+  agents: the working agreement, the test command, and the invariants that
+  must not be violated. The reference material behind them is in
+  [engineering-notes.md](engineering-notes.md).
+- [assets/branding/BRAND.md](https://github.com/treeloom/treeloom/blob/main/assets/branding/BRAND.md): logo files,
   palette, and usage rules.
 
 ## Keeping this index current
@@ -107,3 +110,45 @@ Add a row when a document is added, and move it between tables when its
 class changes: a snapshot that is superseded gains a banner and a note here;
 a plan that ships becomes a feature doc. Summaries describe what a reader will
 find, never a number, so they don't drift when results are refreshed.
+
+% Sidebar navigation for the Sphinx/Read the Docs build. Hidden so the tables
+% above stay the page body; the captions become the sidebar sections.
+
+```{toctree}
+:caption: Getting started and operating
+:maxdepth: 1
+:hidden:
+
+simple-mode
+docker-images
+engineering-notes
+result-provenance
+authz
+incremental-indexing
+fleet-operations
+observability-runbook
+```
+
+```{toctree}
+:caption: Evidence and benchmarks
+:maxdepth: 1
+:hidden:
+
+benchmark-results-2026-09
+benchmark-eval
+benchmark-refresh-runbook
+benchmark-findings
+token-optimization-rejected
+graph-ablation
+cost-across-models
+```
+
+```{toctree}
+:caption: Design records and history
+:maxdepth: 1
+:hidden:
+
+adr-001-cost-aware-embedding-proxy
+adr-002-no-langchain-langgraph
+gpu-cpu-routing
+```
