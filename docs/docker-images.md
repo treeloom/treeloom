@@ -23,15 +23,31 @@ tree-sitter grammars, chonkie) is slow to build under QEMU emulation. The
 indexer is normally run on the host anyway (it must read arbitrary user paths;
 see the Quick Start), so the image matters mostly for server deployments.
 
+## Versioning
+
+Treeloom uses CalVer: a release is named for the date it was cut, in the
+form `YYYY.M.D`, for example `2026.9.22`.
+
+- No zero padding (`2026.9.2`, never `2026.09.02`). PEP 440 normalises
+  `09` to `9`, so padding would make the wheel version and the git tag
+  disagree.
+- A second release on the same day appends a counter: `2026.9.22.1`,
+  `2026.9.22.2`.
+- The git tag is the version with a `v` prefix: `v2026.9.22`.
+- The tag must equal `version` in `pyproject.toml`. The publish workflow's
+  `check-tag` job refuses a tag that is not CalVer-shaped or that does not
+  match, before any image is built.
+
 ## Tags
 
 | Trigger | Tags pushed |
 |---|---|
-| Git tag `vX.Y.Z` | `X.Y.Z`, `X.Y`, `latest` |
+| Git tag `vYYYY.M.D[.N]` | `YYYY.M.D[.N]`, `YYYY.M` (rolling month), `latest` |
 | Manual workflow run (any branch) | `edge`, `sha-<short commit>` |
 | Pull request touching a Dockerfile | build only, nothing pushed |
 
-`latest` always tracks the most recent release tag, never `main`.
+`latest` always tracks the most recent release tag, never `main`. The
+rolling month tag (`2026.9`) moves to the newest release within that month.
 
 ## Using the published images
 
@@ -44,8 +60,8 @@ images:
 docker compose pull ui mcp-server qwen3-reranker
 docker compose up -d ui
 
-# Pin a specific release
-TREELOOM_IMAGE_TAG=0.3.0 docker compose pull ui
+# Pin a specific release (or a month: TREELOOM_IMAGE_TAG=2026.9)
+TREELOOM_IMAGE_TAG=2026.9.22 docker compose pull ui
 ```
 
 `TREELOOM_IMAGE_NAMESPACE` (default `treeloom`) and `TREELOOM_IMAGE_TAG`
@@ -88,18 +104,19 @@ gh variable set DOCKERHUB_NAMESPACE --repo treeloom/treeloom --body treeloom
 
 Cutting a release:
 
-1. Bump `version` in `pyproject.toml` (the image tag is taken from the git
-   tag, but the two must agree) and merge to `main`.
-2. Tag and push the tag:
+1. Set `version` in `pyproject.toml` to today's date in CalVer form (see
+   "Versioning" above) and merge to `main`. The unit suite checks the shape.
+2. Tag and push the tag — the same string with a `v` prefix:
    ```bash
-   git tag v0.3.0 && git push origin v0.3.0
+   git tag v2026.9.22 && git push origin v2026.9.22
    ```
-3. Watch the "Docker images" workflow. Four jobs run in parallel, one per
-   image; the indexer and reranker jobs take the longest (the reranker pulls a
-   ~6 GB CUDA base).
+3. Watch the "Docker images" workflow. `check-tag` runs first and fails the
+   run if the tag and pyproject disagree; then four build jobs run in
+   parallel, one per image. The indexer and reranker jobs take the longest
+   (the reranker pulls a ~6 GB CUDA base).
 4. Verify on Docker Hub, or from any machine:
    ```bash
-   docker pull treeloom/ui:0.3.0 && docker pull treeloom/indexer:0.3.0
+   docker pull treeloom/ui:2026.9.22 && docker pull treeloom/indexer:2026.9.22
    ```
 
 A pre-release smoke build without touching `latest`: run the workflow manually

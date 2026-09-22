@@ -2,9 +2,14 @@ name: Docker images
 
 # Builds the Treeloom container images and publishes them to Docker Hub.
 #
-#   * push of a `vX.Y.Z` tag  -> build + push `X.Y.Z`, `X.Y`, `latest`
-#   * manual run              -> build + push `edge` + `sha-<short>` (any ref)
+#   * push of a `vYYYY.M.D[.N]` tag -> build + push `YYYY.M.D[.N]`, `YYYY.M`, `latest`
+#   * manual run                    -> build + push `edge` + `sha-<short>` (any ref)
 #   * pull request touching a Dockerfile / this workflow -> build only, no push
+#
+# Versions are CalVer (docs/docker-images.md, "Versioning"): the release
+# date without zero padding, an optional `.N` for a same-day re-release, and
+# the git tag is that version with a `v` prefix. The `check-tag` job refuses
+# a tag that is not CalVer-shaped or does not equal pyproject.toml's version.
 #
 # Repository settings required for the push paths:
 #   secrets.DOCKERHUB_USERNAME  Docker Hub account (or org member) login
@@ -30,8 +35,39 @@ env:
   IMAGE_NAMESPACE: ${{ vars.DOCKERHUB_NAMESPACE || 'treeloom' }}
 
 jobs:
+  check-tag:
+    # Only on release tags: fail loud before any image is built if the tag
+    # is not `vYYYY.M.D[.N]` or does not match pyproject.toml.
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag is CalVer and equals pyproject version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          calver='^v[0-9]{4}\.([1-9]|1[0-2])\.([1-9]|[12][0-9]|3[01])(\.[1-9][0-9]*)?$'
+          if ! [[ "$TAG" =~ $calver ]]; then
+            echo "::error::tag '$TAG' is not CalVer (expected vYYYY.M.D or vYYYY.M.D.N, no zero padding)"
+            exit 1
+          fi
+          pyver=$(sed -nE 's/^version = "([^"]+)"/\1/p' pyproject.toml | head -1)
+          if [[ "v$pyver" != "$TAG" ]]; then
+            echo "::error::tag '$TAG' does not match pyproject.toml version '$pyver' — bump pyproject first"
+            exit 1
+          fi
+          echo "tag $TAG matches pyproject version $pyver"
+
   build:
     name: ${{ matrix.image }}
+    needs: [check-tag]
+    # `needs` would skip the build whenever check-tag is skipped (manual runs,
+    # PRs), so run when check-tag either succeeded or was skipped, never when
+    # it failed.
+    if: always() && needs.check-tag.result != 'failure'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -86,9 +122,14 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: docker.io/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}
+          # CalVer tags are not semver (a same-day re-release has four
+          # parts), so match them by regex: the full version, then the
+          # rolling month tag (`2026.9`), then `latest`. The action splits
+          # each rule on commas, so the patterns must not contain one —
+          # `\d\d?` instead of `\d{1,2}`.
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=match,pattern=^v(\d{4}\.\d\d?\.\d\d?(?:\.\d+)?)$,group=1
+            type=match,pattern=^v(\d{4}\.\d\d?)\.\d\d?(?:\.\d+)?$,group=1
             type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
             type=raw,value=edge,enable=${{ github.event_name == 'workflow_dispatch' }}
             type=sha,prefix=sha-,enable=${{ github.event_name == 'workflow_dispatch' }}

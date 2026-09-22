@@ -1,6 +1,6 @@
 [project]
 name = "treeloom"
-version = "0.3.0"
+version = "2026.9.22"
 description = "Treeloom - GraphRAG code search with tree-sitter indexing"
 readme = "README.md"
 license = { file = "LICENSE" }
