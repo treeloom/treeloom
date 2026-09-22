@@ -124,10 +124,12 @@ jobs:
           images: docker.io/${{ env.IMAGE_NAMESPACE }}/${{ matrix.image }}
           # CalVer tags are not semver (a same-day re-release has four
           # parts), so match them by regex: the full version, then the
-          # rolling month tag (`2026.9`), then `latest`.
+          # rolling month tag (`2026.9`), then `latest`. The action splits
+          # each rule on commas, so the patterns must not contain one —
+          # `\d\d?` instead of `\d{1,2}`.
           tags: |
-            type=match,pattern=^v(\d{4}\.\d{1,2}\.\d{1,2}(?:\.\d+)?)$,group=1
-            type=match,pattern=^v(\d{4}\.\d{1,2})\.\d{1,2}(?:\.\d+)?$,group=1
+            type=match,pattern=^v(\d{4}\.\d\d?\.\d\d?(?:\.\d+)?)$,group=1
+            type=match,pattern=^v(\d{4}\.\d\d?)\.\d\d?(?:\.\d+)?$,group=1
             type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
             type=raw,value=edge,enable=${{ github.event_name == 'workflow_dispatch' }}
             type=sha,prefix=sha-,enable=${{ github.event_name == 'workflow_dispatch' }}
