@@ -152,3 +152,4 @@ adr-001-cost-aware-embedding-proxy
 adr-002-no-langchain-langgraph
 gpu-cpu-routing
 ```
+
