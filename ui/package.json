@@ -32,7 +32,7 @@
     "autoprefixer": "^10.6.1",
     "jsdom": "^25.0.1",
     "postcss": "^8.5.28",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.3.3",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
