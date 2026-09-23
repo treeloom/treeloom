@@ -556,7 +556,7 @@ SEARCH_OUTPUT_FIELDS = [
 
 
 def _escape_literal(value: str) -> str:
-    """Escape a value for inlining into a Milvus double-quoted string literal.
+    r"""Escape a value for inlining into a Milvus double-quoted string literal.
 
     Backslash FIRST, then the quote — the order is the whole point. `\` is an
     escape character in Milvus expressions, so a value ending in one swallows
@@ -578,7 +578,7 @@ def _build_filter(
     source_id: str | None,
     exclude_source_ids: list[str] | None = None,
 ) -> tuple[str, dict]:
-    """Build a Milvus boolean expression and its template parameters.
+    r"""Build a Milvus boolean expression and its template parameters.
 
     Returns ``(expression, params)``. Pass *params* as ``filter_params=`` to
     MilvusClient.search/query/delete, or as ``expr_params=`` to
