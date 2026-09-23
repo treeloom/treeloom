@@ -1,5 +1,5 @@
 # Documentation build only (Read the Docs + local `sphinx-build`).
 # Not part of the package's runtime or dev extras.
 sphinx>=8,<9
-myst-parser>=4,<5
+myst-parser>=4,<6
 furo>=2024
