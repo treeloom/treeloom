@@ -56,3 +56,11 @@ updates:
     groups:
       base-images:
         patterns: ["*"]
+    # The UI build stays on Node LTS. Odd-numbered Node majors are never LTS
+    # (Dependabot proposed node:25 in #27). Ranges must be written out: the
+    # `25.x` shorthand is silently ignored by the docker updater (checked
+    # with the Dependabot CLI). Bump to the next even major by hand once it
+    # reaches LTS; with these rules the updater does not propose it.
+    ignore:
+      - dependency-name: "node"
+        versions: [">= 25, < 26", ">= 27, < 28", ">= 29, < 30"]
