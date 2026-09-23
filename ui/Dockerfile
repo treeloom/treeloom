@@ -1,6 +1,6 @@
 # Operator UI v2 SPA — multi-stage build.
 # Stage 1: build the static bundle with Vite.
-FROM node:24-alpine AS build
+FROM node:25-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
