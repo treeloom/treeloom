@@ -13,6 +13,13 @@
 
 ---
 
+> [!IMPORTANT]
+> **Treeloom is now Treeweft.** This repository is archived and no longer maintained.
+> Development continues at **[github.com/treeweft/treeweft](https://github.com/treeweft/treeweft)** —
+> please file issues and pull requests there.
+
+---
+
 Treeloom is a **GraphRAG code search engine** that understands code structurally,
 not as flat text. It parses every file into an abstract syntax tree via
 [tree-sitter](https://tree-sitter.github.io/), then weaves those parsed
